@@ -92,7 +92,7 @@ Viewing the Event Log in the [Particle Console](https://console.particle.io) is 
 The *deviceLocator* event contains the information about the tower(s) where you currently are located. For example:
 
 ```
-{"c":{"o":"AT&T","a":[{"i":145074049,"l":11511,"c":310,"n":410}]}
+{"c":{"o":"AT&T","a":[{"i":145073610,"l":11511,"c":310,"n":410}]}}
 ```
 
 Then you'll see a *hook-sent/deviceLocator* event. The data is always *undefined*; that is the normal behavior.
@@ -100,11 +100,10 @@ Then you'll see a *hook-sent/deviceLocator* event. The data is always *undefined
 Finally, you should hopefully get `hook-response/deviceLocator` event with something like:
 
 ```
-42.344152799999996,-75.2582815,4127
+42.3857729,-75.195375,4737
 ```
 
 That's the latitude and longitude in degrees and a circle of uncertainty radius in meters.
-
 
 ## Examples
 
