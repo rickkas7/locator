@@ -24,6 +24,10 @@ The easiest way to get started is to use Particle Web IDE or Particle Local IDE 
 
 ![Import the firmware library](http://i.imgur.com/eXmrTpy.png)
 
+1) Click on the Libraries icon in the side bar
+2) Find the "Locator" library and click on it
+3) Click the "Include in Project" button to add it to your firmware application 
+
 Once the library has been imported, paste in the following code:
 
 ```
