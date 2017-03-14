@@ -7,7 +7,9 @@ This is not a substitute for GPS; it's a mainly a quick and easy way to figure o
 In experimental testing, however, it appears to be much more accurate in cities where there are many cellular towers. Also, Wi-Fi locations tend to be very accurate when available, though they are not always available.
 
 ## Get Started
+
 In order to start collecting device location, you will need to do the following:
+
 1) Get a [Google API Key](#getting-a-google-api-key)
 2) Flash your device with the [locator firmware library](#writing-device-firmware)
 3) [Create a webhook](#creating-a-webhook) that gets the device's location from the visible networks
@@ -22,7 +24,7 @@ This key is entered into your webhook to authentication your location requests.
 
 The easiest way to get started is to use Particle Web IDE or Particle Local IDE and select the **locator** library from the community library and use the provided example. To get started using the Web IDE, visit https://build.particle.io, and follow the steps below to import the location library into your project.
 
-![Import the firmware library](http://i.imgur.com/eXmrTpy.png)
+![Import the firmware library](images/build.png)
 
 1) Click on the Libraries icon in the side bar
 2) Find the "Locator" library and click on it
@@ -31,20 +33,16 @@ The easiest way to get started is to use Particle Web IDE or Particle Local IDE 
 Once the library has been imported, paste in the following code:
 
 ```
-#include "Particle.h"
 #include "locator.h"
 
-SerialLogHandler logHandler;
 Locator locator;
 
 SYSTEM_THREAD(ENABLED);
 
-
 void setup() {
 	Serial.begin(9600);
-	locator.withLocateOnce();
+	locator.withLocatePeriodic(120);
 }
-
 
 void loop() {
 	locator.loop();
@@ -52,19 +50,9 @@ void loop() {
 
 ```
 
-That program works on both the Electron and Photon (and P1) 
+That program works on both the Electron and Photon (and P1). It requires system firmware 0.6.0 or later.
 
-To have it post the location periodically, use the withLocatePeriodic method instead, and pass in the number of seconds between location attempts. (120 = 120 seconds or 2 minutes.)
-
-```
-locator.withLocatePeriodic(120);
-```
-
-To have it test the location manually specify neither Once nor Periodic, and call:
-
-```
-locator.publishLocation();
-```
+The calls are described in the **Firmware Library API** section below.
 
 ## Creating a Webhook
 
@@ -119,6 +107,77 @@ This response contains the location of the device, broken down into three comma-
 - **Latitude**: The latitude of the device's location
 - **Longitude**: The longitude of the device's location
 - **Circle of Uncertainty**: The radius in meters that represents the uncertainty range of the reported location 
+
+
+## Firmware Library API
+
+### Operating modes
+
+There are three modes of operation:
+
+If you want to only publish the location once when the device starts up, use withLocateOnce from your setup function.
+
+```
+locator.withLocateOnce();
+```
+
+To publish every *n* seconds while connected to the cloud, use withLocatePeriodic. The value is in seconds.
+
+```
+locator.withLocatePeriodic(120);
+```
+
+To manually connect, specify neither option and call publishLocation when you want to publish the location
+
+```
+locator.publishLocation();
+```
+
+### The loop
+
+With periodic and locate once modes, you must call 
+
+```
+locator.loop();
+```
+
+from your loop. It doesn't hurt to always call it, even in manual location mode. It gives the library time to process the data.
+
+### Customizing the event name
+
+The default event name is **eventLocator**. You can change that in setup using:
+
+```
+locator.withEventName("myEventName");
+```
+
+This also must be updated in the webhook, since the eventName is what triggers the webhook. 
+
+### Subscription
+
+You can also have the library tell your firmware code what location was found. Use the withSubscribe option with a callback function.
+
+This goes in setup() for example:
+
+```
+locator.withSubscribe(locationCallback).withLocatePeriodic(120);
+```
+
+The callback function looks like this:
+
+```
+void locationCallback(float lat, float lon, float accuracy)
+```
+
+One possibility is that you could display this information on a small OLED display, for example.
+
+### Debugging
+
+The library uses the logging feature of system firmware 0.6.0 or later. Adding this line to the top of your .ino file will enable debugging messages to the serial port.
+
+```
+SerialLogHandler logHandler;
+```
 
 ## Examples
 
