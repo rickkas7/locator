@@ -115,8 +115,10 @@ Finally, you should hopefully get `hook-response/deviceLocator` event with somet
 ```
 42.3857729,-75.195375,4737
 ```
-
-That's the latitude and longitude in degrees and a circle of uncertainty radius in meters.
+This response contains the location of the device, broken down into three comma-separated values:
+- **Latitude**: The latitude of the device's location
+- **Longitude**: The longitude of the device's location
+- **Circle of Uncertainty**: The radius in meters that represents the uncertainty range of the reported location 
 
 ## Examples
 
