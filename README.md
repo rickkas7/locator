@@ -6,47 +6,29 @@ This is not a substitute for GPS; it's a mainly a quick and easy way to figure o
 
 In experimental testing, however, it appears to be much more accurate in cities where there are many cellular towers. Also, Wi-Fi locations tend to be very accurate when available, though they are not always available.
 
+## Get Started
+In order to start collecting device location, you will need to do the following:
+1) Get a [Google API Key](#getting-a-google-api-key)
+2) Flash your device with the [locator firmware library](#writing-device-firmware)
+3) [Create a webhook](#creating-a-webhook) that gets the device's location from the visible networks
+
 ## Getting a Google API Key
 
 In order to use the API you will need to get a [Google Location API Key](https://developers.google.com/maps/documentation/geolocation/get-api-key). 
 
 This key is entered into your webhook to authentication your location requests.
 
-## Creating a Webhook
+## Writing Device Firmware
 
-In order to create the webhook you must use the [Particle CLI](https://docs.particle.io/guide/tools-and-features/cli/photon/). You cannot use the graphical webhook creator because this particular webhook requires some special features not available in the graphical UI at this time.
+The easiest way to get started is to use Particle Web IDE or Particle Local IDE and select the **locator** library from the community library and use the provided example. To get started using the Web IDE, visit https://build.particle.io, and follow the steps below to import the location library into your project.
 
-For example, here is my hook.json file. Make sure you update where it says `PASTE_YOUR_GOOGLE_API_KEY_HERE`.
+![Import the firmware library](http://i.imgur.com/eXmrTpy.png)
 
-```
-{
-	"event": "deviceLocator",
-	"url": "https://www.googleapis.com/geolocation/v1/geolocate",
-	"requestType": "POST",
-	"mydevices": true,
-	"noDefaults": true,
-	"query": {
-		"key": "PASTE_YOUR_GOOGLE_API_KEY_HERE"
-	},
-	"headers": {
-		"Content-Type": "application/json"
-	},
-	"body": "{ {{#c}}\"considerIp\":false,\"radioType\": \"gsm\",\"carrier\": \"{{o}}\",\"cellTowers\":[{{#a}}{\"cellId\":{{i}},\"locationAreaCode\":{{l}},\"mobileCountryCode\":{{c}},\"mobileNetworkCode\":{{n}} },{{/a}}{\"cellId\":{{a.0.i}},\"locationAreaCode\":{{a.0.l}},\"mobileCountryCode\":{{a.0.c}},\"mobileNetworkCode\":{{a.0.n}} }]{{/c}}{{#w}}\"considerIp\":{{i}},\"wifiAccessPoints\":[{{#a}}{\"macAddress\":\"{{m}}\",\"signalStrength\":{{s}},\"channel\":{{c}} },{{/a}}{\"macAddress\":\"{{a.0.m}}\",\"signalStrength\":{{a.0.s}},\"channel\":{{a.0.c}} }]{{/w}} }",
-	"responseTemplate": "{{^error}}{{location.lat}},{{location.lng}},{{accuracy}}{{/error}}{{#error}}{{message}}{{/error}}",
-	"responseTopic": "hook-response/{{PARTICLE_EVENT_NAME}}/{{PARTICLE_DEVICE_ID}}"
-}
-```
+1) Click on the Libraries icon in the side bar
+2) Find the "Locator" library and click on it
+3) Click the "Include in Project" button to add it to your firmware application 
 
-To create the webhook with the CLI:
-
-```
-particle webhook create hook.json
-```
-
-
-## Writing Photon Firmware
-
-The easiest way to get started is to use Particle Build or Particle Dev and select the **locator** library from the community library and use the provided example. It looks like this:
+Once the library has been imported, paste in the following code:
 
 ```
 #include "Particle.h"
@@ -84,6 +66,37 @@ To have it test the location manually specify neither Once nor Periodic, and cal
 locator.publishLocation();
 ```
 
+## Creating a Webhook
+
+In order to create the webhook you must use the [Particle CLI](https://docs.particle.io/guide/tools-and-features/cli/photon/). You cannot use the graphical webhook creator because this particular webhook requires some special features not available in the graphical UI at this time.
+
+For example, here is my hook.json file. Make sure you update where it says `PASTE_YOUR_GOOGLE_API_KEY_HERE`.
+
+```
+{
+	"event": "deviceLocator",
+	"url": "https://www.googleapis.com/geolocation/v1/geolocate",
+	"requestType": "POST",
+	"mydevices": true,
+	"noDefaults": true,
+	"query": {
+		"key": "PASTE_YOUR_GOOGLE_API_KEY_HERE"
+	},
+	"headers": {
+		"Content-Type": "application/json"
+	},
+	"body": "{ {{#c}}\"considerIp\":false,\"radioType\": \"gsm\",\"carrier\": \"{{o}}\",\"cellTowers\":[{{#a}}{\"cellId\":{{i}},\"locationAreaCode\":{{l}},\"mobileCountryCode\":{{c}},\"mobileNetworkCode\":{{n}} },{{/a}}{\"cellId\":{{a.0.i}},\"locationAreaCode\":{{a.0.l}},\"mobileCountryCode\":{{a.0.c}},\"mobileNetworkCode\":{{a.0.n}} }]{{/c}}{{#w}}\"considerIp\":{{i}},\"wifiAccessPoints\":[{{#a}}{\"macAddress\":\"{{m}}\",\"signalStrength\":{{s}},\"channel\":{{c}} },{{/a}}{\"macAddress\":\"{{a.0.m}}\",\"signalStrength\":{{a.0.s}},\"channel\":{{a.0.c}} }]{{/w}} }",
+	"responseTemplate": "{{^error}}{{location.lat}},{{location.lng}},{{accuracy}}{{/error}}{{#error}}{{message}}{{/error}}",
+	"responseTopic": "hook-response/{{PARTICLE_EVENT_NAME}}/{{PARTICLE_DEVICE_ID}}"
+}
+```
+
+To create the webhook with the CLI:
+
+```
+particle webhook create hook.json
+```
+
 
 ## Testing
 
@@ -102,8 +115,10 @@ Finally, you should hopefully get `hook-response/deviceLocator` event with somet
 ```
 42.3857729,-75.195375,4737
 ```
-
-That's the latitude and longitude in degrees and a circle of uncertainty radius in meters.
+This response contains the location of the device, broken down into three comma-separated values:
+- **Latitude**: The latitude of the device's location
+- **Longitude**: The longitude of the device's location
+- **Circle of Uncertainty**: The radius in meters that represents the uncertainty range of the reported location 
 
 ## Examples
 
