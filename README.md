@@ -20,7 +20,11 @@ This key is entered into your webhook to authentication your location requests.
 
 ## Writing Device Firmware
 
-The easiest way to get started is to use Particle Build or Particle Dev and select the **locator** library from the community library and use the provided example. It looks like this:
+The easiest way to get started is to use Particle Web IDE or Particle Local IDE and select the **locator** library from the community library and use the provided example. To get started using the Web IDE, visit https://build.particle.io, and follow the steps below to import the location library into your project.
+
+![Import the firmware library](http://i.imgur.com/eXmrTpy.png)
+
+Once the library has been imported, paste in the following code:
 
 ```
 #include "Particle.h"
