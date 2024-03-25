@@ -56,12 +56,11 @@ The calls are described in the **Firmware Library API** section below.
 
 ## Creating a Webhook
 
-In order to create the webhook you must use the [Particle CLI](https://docs.particle.io/guide/tools-and-features/cli/photon/). You cannot use the graphical webhook creator because this particular webhook requires some special features not available in the graphical UI at this time.
-
-For example, here is my hook.json file. Make sure you update where it says `PASTE_YOUR_GOOGLE_API_KEY_HERE`.
+This is the JSON for the integration. Make sure you update where it says `PASTE_YOUR_GOOGLE_API_KEY_HERE`!
 
 ```
 {
+	"name": "Manual geolocation test",
 	"event": "deviceLocator",
 	"url": "https://www.googleapis.com/geolocation/v1/geolocate",
 	"requestType": "POST",
@@ -79,11 +78,13 @@ For example, here is my hook.json file. Make sure you update where it says `PAST
 }
 ```
 
-To create the webhook with the CLI:
+To create this using the console:
 
-```
-particle webhook create hook.json
-```
+- Open the Integrations tab
+- Create a new Integration of type Webhook (not Google Maps Device locator!)
+- Click on the Custom Template option
+- Paste in the JSON above (with your API key)
+
 
 
 ## Testing
